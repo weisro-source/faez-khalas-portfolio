@@ -1,0 +1,1132 @@
+{
+    "info": {
+        "name": "Faez Khalas Portfolio API",
+        "description": "API شامل لإدارة موقع تعريفي مع مشاريع معرض الأعمال وطلبات المراسلة",
+        "version": "1.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:5000",
+            "type": "string"
+        },
+        {
+            "key": "auth_token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "🔐 Authentication",
+            "item": [
+                {
+                    "name": "Setup First Admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.collectionVariables.set('auth_token', response.token);",
+                                    "    pm.test('Admin created successfully', () => {",
+                                    "        pm.expect(response.status).to.eql('success');",
+                                    "    });",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"فائز خلاص\",\n  \"email\": \"admin@faez-khalas.com\",\n  \"password\": \"admin123456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/setup",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "setup"
+                            ]
+                        },
+                        "description": "إنشاء حساب المشرف الأول (يعمل فقط إذا لم يوجد مشرف)"
+                    }
+                },
+                {
+                    "name": "Login Admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.collectionVariables.set('auth_token', response.token);",
+                                    "    pm.test('Login successful', () => {",
+                                    "        pm.expect(response.status).to.eql('success');",
+                                    "        pm.expect(response.token).to.exist;",
+                                    "    });",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@faez-khalas.com\",\n  \"password\": \"admin123456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "تسجيل دخول المشرف"
+                    }
+                },
+                {
+                    "name": "Get Admin Profile",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "me"
+                            ]
+                        },
+                        "description": "جلب معلومات المشرف الحالي"
+                    }
+                },
+                {
+                    "name": "Update Admin Profile",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"فائز خلاص - محدث\",\n  \"email\": \"admin-updated@faez-khalas.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/profile",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "profile"
+                            ]
+                        },
+                        "description": "تحديث معلومات المشرف"
+                    }
+                },
+                {
+                    "name": "Change Password",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"currentPassword\": \"admin123456\",\n  \"newPassword\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/change-password",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "change-password"
+                            ]
+                        },
+                        "description": "تغيير كلمة مرور المشرف"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📁 Projects",
+            "item": [
+                {
+                    "name": "📖 Public Endpoints",
+                    "item": [
+                        {
+                            "name": "Get All Projects",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects?page=1&limit=10&sort=-createdAt",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "sort",
+                                            "value": "-createdAt"
+                                        },
+                                        {
+                                            "key": "category",
+                                            "value": "web",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "featured",
+                                            "value": "true",
+                                            "disabled": true
+                                        }
+                                    ]
+                                },
+                                "description": "جلب جميع المشاريع مع إمكانية التصفية والترتيب"
+                            }
+                        },
+                        {
+                            "name": "Get Featured Projects",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects/featured",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects",
+                                        "featured"
+                                    ]
+                                },
+                                "description": "جلب المشاريع المميزة فقط"
+                            }
+                        },
+                        {
+                            "name": "Get Projects by Category",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects/category/web?page=1&limit=5",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects",
+                                        "category",
+                                        "web"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "5"
+                                        }
+                                    ]
+                                },
+                                "description": "جلب المشاريع حسب الفئة (web, mobile, desktop, design, other)"
+                            }
+                        },
+                        {
+                            "name": "Search Projects",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects/search?q=react&page=1&limit=5",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects",
+                                        "search"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "q",
+                                            "value": "react"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "5"
+                                        }
+                                    ]
+                                },
+                                "description": "البحث في المشاريع بالاسم أو الوصف أو التقنيات"
+                            }
+                        },
+                        {
+                            "name": "Get Single Project",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects/{{project_id}}",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects",
+                                        "{{project_id}}"
+                                    ]
+                                },
+                                "description": "جلب مشروع واحد بالمعرف"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "🔒 Admin Endpoints",
+                    "item": [
+                        {
+                            "name": "Create Project",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 201) {",
+                                            "    const response = pm.response.json();",
+                                            "    pm.collectionVariables.set('project_id', response.data.project._id);",
+                                            "    pm.test('Project created successfully', () => {",
+                                            "        pm.expect(response.status).to.eql('success');",
+                                            "    });",
+                                            "}"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "name",
+                                            "value": "موقع التجارة الإلكترونية",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "description",
+                                            "value": "موقع متكامل للتجارة الإلكترونية مع لوحة تحكم شاملة ونظام دفع آمن",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "category",
+                                            "value": "web",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "status",
+                                            "value": "completed",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "featured",
+                                            "value": "true",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "technologies",
+                                            "value": "[\"React\", \"Node.js\", \"MongoDB\", \"Stripe\", \"Express\"]",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "projectUrl",
+                                            "value": "https://demo-ecommerce.faez-khalas.com",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "githubUrl",
+                                            "value": "https://github.com/faez-khalas/ecommerce-project",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "order",
+                                            "value": "1",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "coverImage",
+                                            "type": "file",
+                                            "src": [],
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "images",
+                                            "type": "file",
+                                            "src": [],
+                                            "disabled": true
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects"
+                                    ]
+                                },
+                                "description": "إنشاء مشروع جديد مع صور (تحتاج إلى رفع ملفات)"
+                            }
+                        },
+                        {
+                            "name": "Update Project",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PUT",
+                                "header": [],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "name",
+                                            "value": "موقع التجارة الإلكترونية - محدث",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "description",
+                                            "value": "موقع محدث للتجارة الإلكترونية مع ميزات جديدة",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "featured",
+                                            "value": "false",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "replaceImages",
+                                            "value": "false",
+                                            "type": "text",
+                                            "description": "true لاستبدال جميع الصور، false لإضافة صور جديدة"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects/{{project_id}}",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects",
+                                        "{{project_id}}"
+                                    ]
+                                },
+                                "description": "تحديث مشروع موجود"
+                            }
+                        },
+                        {
+                            "name": "Delete Project",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects/{{project_id}}",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects",
+                                        "{{project_id}}"
+                                    ]
+                                },
+                                "description": "حذف مشروع"
+                            }
+                        },
+                        {
+                            "name": "Update Project Order",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"order\": 5\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects/{{project_id}}/order",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects",
+                                        "{{project_id}}",
+                                        "order"
+                                    ]
+                                },
+                                "description": "تحديث ترتيب المشروع"
+                            }
+                        },
+                        {
+                            "name": "Toggle Project Status",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/projects/{{project_id}}/status",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "projects",
+                                        "{{project_id}}",
+                                        "status"
+                                    ]
+                                },
+                                "description": "تفعيل أو إلغاء تفعيل المشروع"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "📧 Contacts",
+            "item": [
+                {
+                    "name": "📖 Public Endpoints",
+                    "item": [
+                        {
+                            "name": "Send Contact Message",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "if (pm.response.code === 201) {",
+                                            "    const response = pm.response.json();",
+                                            "    pm.collectionVariables.set('contact_id', response.data.contact._id);",
+                                            "    pm.test('Contact message sent successfully', () => {",
+                                            "        pm.expect(response.status).to.eql('success');",
+                                            "    });",
+                                            "}"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"أحمد محمد علي\",\n  \"email\": \"ahmed@example.com\",\n  \"phone\": \"+966501234567\",\n  \"subject\": \"استفسار عن خدمات التطوير\",\n  \"message\": \"السلام عليكم ورحمة الله وبركاته، أرغب في الاستفسار عن خدمات تطوير المواقع الإلكترونية والتطبيقات. لدي مشروع تجاري وأحتاج إلى موقع إلكتروني احترافي مع لوحة تحكم. يرجى التواصل معي في أقرب وقت ممكن.\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts"
+                                    ]
+                                },
+                                "description": "إرسال رسالة تواصل من الزوار"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "🔒 Admin Endpoints",
+                    "item": [
+                        {
+                            "name": "Get All Contacts",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts?page=1&limit=10&sort=-createdAt",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "sort",
+                                            "value": "-createdAt"
+                                        },
+                                        {
+                                            "key": "status",
+                                            "value": "new",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "priority",
+                                            "value": "high",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "isRead",
+                                            "value": "false",
+                                            "disabled": true
+                                        }
+                                    ]
+                                },
+                                "description": "جلب جميع رسائل التواصل مع إمكانية التصفية"
+                            }
+                        },
+                        {
+                            "name": "Get Contact Stats",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts/stats",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts",
+                                        "stats"
+                                    ]
+                                },
+                                "description": "إحصائيات شاملة عن رسائل التواصل"
+                            }
+                        },
+                        {
+                            "name": "Get Unread Contacts",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts/unread?limit=5",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts",
+                                        "unread"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "5"
+                                        }
+                                    ]
+                                },
+                                "description": "الرسائل غير المقروءة"
+                            }
+                        },
+                        {
+                            "name": "Search Contacts",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts/search?q=أحمد&page=1&limit=10",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts",
+                                        "search"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "q",
+                                            "value": "أحمد"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        }
+                                    ]
+                                },
+                                "description": "البحث في رسائل التواصل"
+                            }
+                        },
+                        {
+                            "name": "Get Single Contact",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts/{{contact_id}}",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts",
+                                        "{{contact_id}}"
+                                    ]
+                                },
+                                "description": "جلب رسالة واحدة (سيتم تحديدها كمقروءة تلقائياً)"
+                            }
+                        },
+                        {
+                            "name": "Update Contact Status",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"status\": \"replied\",\n  \"notes\": \"تم الرد على العميل عبر البريد الإلكتروني وتم إرسال عرض السعر المطلوب\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts/{{contact_id}}/status",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts",
+                                        "{{contact_id}}",
+                                        "status"
+                                    ]
+                                },
+                                "description": "تحديث حالة الرسالة (new, read, replied, archived)"
+                            }
+                        },
+                        {
+                            "name": "Mark as Read",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts/{{contact_id}}/read",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts",
+                                        "{{contact_id}}",
+                                        "read"
+                                    ]
+                                },
+                                "description": "تحديد الرسالة كمقروءة"
+                            }
+                        },
+                        {
+                            "name": "Mark as Unread",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts/{{contact_id}}/unread",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts",
+                                        "{{contact_id}}",
+                                        "unread"
+                                    ]
+                                },
+                                "description": "تحديد الرسالة كغير مقروءة"
+                            }
+                        },
+                        {
+                            "name": "Delete Contact",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{auth_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/contacts/{{contact_id}}",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "contacts",
+                                        "{{contact_id}}"
+                                    ]
+                                },
+                                "description": "حذف رسالة تواصل"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "📤 File Upload",
+            "item": [
+                {
+                    "name": "Upload Single Image",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "image",
+                                    "type": "file",
+                                    "src": []
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/upload/image",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "upload",
+                                "image"
+                            ]
+                        },
+                        "description": "رفع صورة واحدة (أقصى حجم 5 ميجابايت)"
+                    }
+                },
+                {
+                    "name": "Delete Image",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"imageUrl\": \"/uploads/image-1234567890-123456789.jpg\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/upload/image",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "upload",
+                                "image"
+                            ]
+                        },
+                        "description": "حذف صورة بالرابط"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔍 System",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/health",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "health"
+                            ]
+                        },
+                        "description": "فحص حالة الخادم"
+                    }
+                }
+            ]
+        }
+    ]
+}
