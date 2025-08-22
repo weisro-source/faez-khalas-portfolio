@@ -1,5 +1,6 @@
 const Project = require('../models/Project');
 const { deleteFile, deleteFiles } = require('../middleware/upload');
+const { transformProjectsImages, transformProjectImages } = require('../utils/imageUtils');
 const path = require('path');
 
 // Helper function for pagination
@@ -52,10 +53,14 @@ const getAllProjects = async (req, res, next) => {
         const total = await Project.countDocuments(filter);
         const totalPages = Math.ceil(total / limitNum);
 
+        // Transform projects to include full image URLs
+        const baseUrl = req.imageUtils ? req.imageUtils.baseUrl : `${req.protocol}://${req.get('host')}`;
+        const transformedProjects = transformProjectsImages(projects, baseUrl);
+
         res.status(200).json({
             status: 'success',
             data: {
-                projects,
+                projects: transformedProjects,
                 pagination: {
                     currentPage: pageNum,
                     totalPages,
@@ -81,10 +86,14 @@ const getFeaturedProjects = async (req, res, next) => {
             isActive: true
         }).sort({ order: 1, createdAt: -1 });
 
+        // Transform projects to include full image URLs
+        const baseUrl = req.imageUtils ? req.imageUtils.baseUrl : `${req.protocol}://${req.get('host')}`;
+        const transformedProjects = transformProjectsImages(projects, baseUrl);
+
         res.status(200).json({
             status: 'success',
             data: {
-                projects
+                projects: transformedProjects
             }
         });
     } catch (error) {
@@ -112,10 +121,14 @@ const getProjectsByCategory = async (req, res, next) => {
         const total = await Project.countDocuments({ category, isActive: true });
         const totalPages = Math.ceil(total / limitNum);
 
+        // Transform projects to include full image URLs
+        const baseUrl = req.imageUtils ? req.imageUtils.baseUrl : `${req.protocol}://${req.get('host')}`;
+        const transformedProjects = transformProjectsImages(projects, baseUrl);
+
         res.status(200).json({
             status: 'success',
             data: {
-                projects,
+                projects: transformedProjects,
                 pagination: {
                     currentPage: pageNum,
                     totalPages,
@@ -174,10 +187,14 @@ const searchProjects = async (req, res, next) => {
             ]
         });
 
+        // Transform projects to include full image URLs
+        const baseUrl = req.imageUtils ? req.imageUtils.baseUrl : `${req.protocol}://${req.get('host')}`;
+        const transformedProjects = transformProjectsImages(projects, baseUrl);
+
         res.status(200).json({
             status: 'success',
             data: {
-                projects,
+                projects: transformedProjects,
                 searchQuery: q,
                 pagination: {
                     currentPage: pageNum,
@@ -205,10 +222,14 @@ const getProject = async (req, res, next) => {
             });
         }
 
+        // Transform project to include full image URLs
+        const baseUrl = req.imageUtils ? req.imageUtils.baseUrl : `${req.protocol}://${req.get('host')}`;
+        const transformedProject = transformProjectImages(project, baseUrl);
+
         res.status(200).json({
             status: 'success',
             data: {
-                project
+                project: transformedProject
             }
         });
     } catch (error) {
@@ -249,11 +270,15 @@ const createProject = async (req, res, next) => {
 
         const project = await Project.create(projectData);
 
+        // Transform project to include full image URLs
+        const baseUrl = req.imageUtils ? req.imageUtils.baseUrl : `${req.protocol}://${req.get('host')}`;
+        const transformedProject = transformProjectImages(project, baseUrl);
+
         res.status(201).json({
             status: 'success',
             message: 'تم إنشاء المشروع بنجاح',
             data: {
-                project
+                project: transformedProject
             }
         });
     } catch (error) {
@@ -338,11 +363,15 @@ const updateProject = async (req, res, next) => {
             });
         }
 
+        // Transform project to include full image URLs
+        const baseUrl = req.imageUtils ? req.imageUtils.baseUrl : `${req.protocol}://${req.get('host')}`;
+        const transformedProject = transformProjectImages(updatedProject, baseUrl);
+
         res.status(200).json({
             status: 'success',
             message: 'تم تحديث المشروع بنجاح',
             data: {
-                project: updatedProject
+                project: transformedProject
             }
         });
     } catch (error) {

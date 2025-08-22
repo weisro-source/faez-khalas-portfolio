@@ -393,6 +393,15 @@
                                             "    pm.collectionVariables.set('project_id', response.data.project._id);",
                                             "    pm.test('Project created successfully', () => {",
                                             "        pm.expect(response.status).to.eql('success');",
+                                            "        pm.expect(response.data.project.coverImage).to.include(pm.collectionVariables.get('base_url'));",
+                                            "        pm.expect(response.data.project.images[0]).to.include(pm.collectionVariables.get('base_url'));",
+                                            "    });",
+                                            "    pm.test('Images include base URL', () => {",
+                                            "        const baseUrl = pm.collectionVariables.get('base_url');",
+                                            "        pm.expect(response.data.project.coverImage).to.include(baseUrl);",
+                                            "        if (response.data.project.images.length > 0) {",
+                                            "            pm.expect(response.data.project.images[0]).to.include(baseUrl);",
+                                            "        }",
                                             "    });",
                                             "}"
                                         ]

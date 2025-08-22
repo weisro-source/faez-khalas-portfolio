@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { protect } = require('../middleware/auth');
 const { uploadProjectImages, handleMulterError } = require('../middleware/upload');
+const { addImageUtils } = require('../utils/imageUtils');
 const {
     validateProject,
     validateId,
@@ -23,11 +24,11 @@ const {
 } = require('../controllers/projectController');
 
 // Public routes (for website visitors)
-router.get('/', validateQuery, getAllProjects);
-router.get('/featured', getFeaturedProjects);
-router.get('/category/:category', getProjectsByCategory);
-router.get('/search', searchProjects);
-router.get('/:id', validateId, getProject);
+router.get('/', validateQuery, addImageUtils, getAllProjects);
+router.get('/featured', addImageUtils, getFeaturedProjects);
+router.get('/category/:category', addImageUtils, getProjectsByCategory);
+router.get('/search', addImageUtils, searchProjects);
+router.get('/:id', validateId, addImageUtils, getProject);
 
 // Protected routes (for admin only)
 router.use(protect); // All routes below this middleware are protected
@@ -36,6 +37,7 @@ router.post('/',
     uploadProjectImages,
     handleMulterError,
     validateProject,
+    addImageUtils,
     createProject
 );
 
@@ -44,6 +46,7 @@ router.put('/:id',
     uploadProjectImages,
     handleMulterError,
     validateProject,
+    addImageUtils,
     updateProject
 );
 
